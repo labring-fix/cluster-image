@@ -28,7 +28,7 @@ jobs:
       build-args: ${{ steps.parse-title-body.outputs.build-args }}
     steps:
       - name: Checkout repository # Required to access your custom action
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Parse Issue Body with JavaScript
         id: parse-title-body # Give this step an ID to reference its outputs
         uses: ./.github/actions/parse-title-body/ # Path to your custom action
