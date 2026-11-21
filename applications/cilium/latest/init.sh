@@ -24,6 +24,7 @@ cd charts && {
     # get Images
     yq '... style=""' "$NAME/values.yaml" |
       grep -E "(repository|tag):" | awk '{print $NF}' | awk -F@ '{print $1}' |
+      grep -v '^""$' |
       sed 's#^#    #g' | sed -E 's#    (.+)/(.+)#- \1/\2:#g' |
       yq ".[]" | sed 's# ##g' >"$NAME/Images"
   }
