@@ -9,7 +9,6 @@ on:
         required: true
         type: string
 
-
 jobs:
   build_apps:
     if: (inputs.app != 'sealos-patch') || (inputs.version != 'v5.0.1-beta1')
@@ -58,4 +57,3 @@ jobs:
           app: ${{ inputs.app }}
           version: ${{ inputs.version }}
         run: .github/scripts/manifest-other.sh
-
