@@ -9,6 +9,7 @@ on:
         required: true
         type: string
 
+
 jobs:
   build_apps:
     if: (inputs.app != 'sealos-patch') || (inputs.version != 'v5.0.1-beta1')
@@ -17,18 +18,20 @@ jobs:
     strategy:
       matrix:
         arch: [ amd64,arm64 ]
-    permissions: read-all
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
       - name: Download buildah and sealos
         run: .github/scripts/download.sh
       - name: Build Image
         env:
-          registry: ${{ vars.D_D_REGISTRY_NAME }}
-          username: ${{ vars.D_C_REGISTRY_REPOSITORY }}
-          repo: ${{ vars.D_C_REGISTRY_REPOSITORY }}
-          password: ${{ secrets.D_C_REGISTRY_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          repo: labring-fix
+          password: ${{ secrets.GITHUB_TOKEN }}
           app: ${{ inputs.app }}
           version: ${{ inputs.version }}
           arch: ${{ matrix.arch }}
@@ -38,18 +41,21 @@ jobs:
       - build_apps
     name: Auto manifest app image
     runs-on: ubuntu-latest
-    permissions: read-all
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
       - name: Download buildah and sealos
         run: .github/scripts/download.sh
       - name: Manifest Image
         env:
-          registry: ${{ vars.D_D_REGISTRY_NAME }}
-          username: ${{ vars.D_C_REGISTRY_REPOSITORY }}
-          repo: ${{ vars.D_C_REGISTRY_REPOSITORY }}
-          password: ${{ secrets.D_C_REGISTRY_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          repo: labring-fix
+          password: ${{ secrets.GITHUB_TOKEN }}
           app: ${{ inputs.app }}
           version: ${{ inputs.version }}
         run: .github/scripts/manifest-other.sh
+
