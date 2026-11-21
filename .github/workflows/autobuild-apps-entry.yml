@@ -16,7 +16,9 @@ jobs:
     needs:
       - resolve-image-info
     uses: ./.github/workflows/autobuild-apps.yml
-    permissions: read-all
+    permissions:
+      contents: read
+      packages: write
     secrets: inherit
     with:
       app: ${{ needs.resolve-image-info.outputs.app }}
