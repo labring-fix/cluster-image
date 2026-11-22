@@ -19,21 +19,23 @@ jobs:
     strategy:
       matrix:
         arch: [ amd64,arm64 ]
-    permissions: read-all
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v4
         # https://github.com/docker/setup-buildx-action
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v4
       - name: Build Image
         env:
-          registry: ${{ vars.D_D_REGISTRY_NAME }}
-          username: ${{ vars.D_D_REGISTRY_REPOSITORY }}
-          repo: ${{ vars.D_D_REGISTRY_REPOSITORY }}
-          password: ${{ secrets.D_D_REGISTRY_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          repo: labring-fix
+          password: ${{ secrets.GITHUB_TOKEN }}
           app: ${{ inputs.app }}
           version: ${{ inputs.version }}
           arch: ${{ matrix.arch }}
@@ -45,16 +47,18 @@ jobs:
       - build_apps
     name: Auto manifest app image
     runs-on: ubuntu-latest
-    permissions: read-all
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
       - name: Manifest Image
         env:
-          registry: ${{ vars.D_D_REGISTRY_NAME }}
-          username: ${{ vars.D_D_REGISTRY_REPOSITORY }}
-          repo: ${{ vars.D_D_REGISTRY_REPOSITORY }}
-          password: ${{ secrets.D_D_REGISTRY_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          repo: labring-fix
+          password: ${{ secrets.GITHUB_TOKEN }}
           app: ${{ inputs.app }}
           version: ${{ inputs.version }}
         run: .github/scripts/manifest-docker.sh
