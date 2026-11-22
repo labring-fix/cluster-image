@@ -36,7 +36,10 @@ if [ $? != 0 ]; then
    exit 1
 fi
 
-wget https://dl.min.io/client/mc/release/linux-$ARCH/mc -O /usr/bin/mc && chmod a+x /usr/bin/mc
+# dl.min.io returns 410 Gone for the mc download now, so fetch it from the
+# minio/mc GitHub release instead (resolve the latest tag first).
+MC_VERSION=$(curl -s https://api.github.com/repos/minio/mc/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -1)
+wget "https://github.com/minio/mc/releases/download/${MC_VERSION}/mc.linux-${ARCH}.${MC_VERSION}" -O /usr/bin/mc && chmod a+x /usr/bin/mc
 if [ $? != 0 ]; then
    echo "====download mc failed!===="
    exit 1
