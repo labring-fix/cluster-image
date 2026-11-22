@@ -38,10 +38,16 @@ cd $buildDir && {
   build_args=$(echo "$BUILD_ARGS" | awk -F ',' '{ for(i=1; i<=NF; i++) { printf "--build-arg %s ", $i } }')
   sudo docker build -t "$IMAGE_BUILD" --platform "linux/$APP_ARCH" --build-arg ARCH=$APP_ARCH $build_args  -f $filename . --no-cache --pull
 
-  sudo docker tag "$IMAGE_BUILD" "$IMAGE_NAME" && sudo docker rmi -f "$IMAGE_BUILD"
+  sudo docker tag "$IMAGE_BUILD" "$IMAGE_NAME"
+  sudo docker rmi -f "$IMAGE_BUILD"
 
-  sudo docker login -u "$IMAGE_HUB_USERNAME" -p "$IMAGE_HUB_PASSWORD" "$IMAGE_HUB_REGISTRY" &&
-    sudo docker push "$IMAGE_NAME" && echo "$IMAGE_NAME push success"
+  # NOTE: keep login/push as separate commands. Chaining them with &&
+  # swallows a push failure under `set -e` (a failing non-final command
+  # in an && list does not abort the script), so a denied push used to
+  # report success while nothing was pushed.
+  sudo docker login -u "$IMAGE_HUB_USERNAME" -p "$IMAGE_HUB_PASSWORD" "$IMAGE_HUB_REGISTRY"
+  sudo docker push "$IMAGE_NAME"
+  echo "$IMAGE_NAME push success"
 }
 
 sudo docker images
