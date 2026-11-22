@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Check for 'accepted' label
         id: check-label
-        uses: actions/github-script@v6
+        uses: actions/github-script@v9
         with:
           script: |
             const { data: issue } = await github.rest.issues.get({
@@ -42,7 +42,9 @@ jobs:
     needs:
       - resolve-image-info
     uses: ./.github/workflows/autobuild-dockerfiles.yml
-    permissions: read-all
+    permissions:
+      contents: read
+      packages: write
     secrets: inherit
     with: 
       app: ${{ needs.resolve-image-info.outputs.app }}
