@@ -38,7 +38,10 @@ fi
 
 # dl.min.io returns 410 Gone for the mc download now, so fetch it from the
 # minio/mc GitHub release instead (resolve the latest tag first).
+# The unauthenticated API call can be rate-limited on shared runners, so
+# fall back to the last known tag instead of downloading with an empty one.
 MC_VERSION=$(curl -s https://api.github.com/repos/minio/mc/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -1)
+MC_VERSION=${MC_VERSION:-RELEASE.2025-08-13T08-35-41Z}
 wget "https://github.com/minio/mc/releases/download/${MC_VERSION}/mc.linux-${ARCH}.${MC_VERSION}" -O /usr/bin/mc && chmod a+x /usr/bin/mc
 if [ $? != 0 ]; then
    echo "====download mc failed!===="
